@@ -6,6 +6,7 @@ import { convertDurationToTimeString } from "../utils/convertDurationToTimeStrin
 import styles from "./home.module.scss";
 import Image from "next/image";
 import Link from "next/link";
+import { usePlayer } from "../context/usePlayer";
 
 type Episodes = {
   id: string;
@@ -14,7 +15,7 @@ type Episodes = {
   thumbnail: string;
   url: string;
   publishedAt: string;
-  duration: string;
+  duration: number;
   durationAsString: number;
 };
 interface HomeProps {
@@ -23,6 +24,7 @@ interface HomeProps {
 }
 
 export default function Home({ allEpisodes, latesEpisodes }: HomeProps) {
+  const { play } = usePlayer();
   return (
     <div className={styles.container}>
       <section className={styles.latesEpisodes}>
@@ -46,7 +48,7 @@ export default function Home({ allEpisodes, latesEpisodes }: HomeProps) {
                   <span>{episode.publishedAt}</span>
                   <span>{episode.durationAsString}</span>
                 </div>
-                <button type="button">
+                <button type="button" onClick={() => play(episode)}>
                   <img src="/play-green.svg" alt="Tocar episodio" />
                 </button>
               </li>
@@ -89,7 +91,7 @@ export default function Home({ allEpisodes, latesEpisodes }: HomeProps) {
                   <td style={{ width: 100 }}>{episode.publishedAt}</td>
                   <td>{episode.durationAsString}</td>
                   <td>
-                    <button type="button">
+                    <button type="button" onClick={() => play(episode)}>
                       <img src="/play-green.svg" alt="Tocar episodio" />
                     </button>
                   </td>
