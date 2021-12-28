@@ -15,9 +15,19 @@ type Episode = {
 type PlayerContextData = {
   episodeList: Episode[];
   currentEpisodeIndex: number;
+  hasNext: boolean;
+  hasPrevious: boolean;
   isPlaying: boolean;
+  isLooping: boolean;
+  isShuffling: boolean;
   togglePlay: () => void;
+  playPrevious: () => void;
+  toggleShuffling: () => void;
+  playNext: () => void;
+  toggleLop: () => void;
+  clearPlayState: () => void;
   setPlayingState: (state: boolean) => void;
+  playList: (list: Episode[], index: number) => void;
   play: (episode: Episode) => void;
 };
 
@@ -27,6 +37,8 @@ export function PayerProvider({ children }: PlayerProviderProps) {
   const [episodeList, setEpisodeList] = useState([]);
   const [currentEpisodeIndex, setCurrentEpisodeIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isLooping, setIsLooping] = useState(false);
+  const [isShuffling, setIsShuffling] = useState(false);
 
   function play(episode: Episode) {
     setEpisodeList([episode]);
@@ -36,8 +48,45 @@ export function PayerProvider({ children }: PlayerProviderProps) {
   function togglePlay() {
     setIsPlaying(!isPlaying);
   }
+
+  function toggleLop() {
+    setIsLooping(!isLooping);
+  }
+
+  function toggleShuffling() {
+    setIsShuffling(!isShuffling);
+  }
   function setPlayingState(state: boolean) {
     setIsPlaying(state);
+  }
+
+  function playList(list: Episode[], index: number) {
+    setEpisodeList(list);
+    setCurrentEpisodeIndex(index);
+    setIsPlaying(true);
+  }
+  function clearPlayState() {
+    setEpisodeList([]);
+    setCurrentEpisodeIndex(0);
+  }
+
+  const hasNext = isShuffling || currentEpisodeIndex + 1 < episodeList.length;
+  const hasPrevious = currentEpisodeIndex > 0;
+
+  function playNext() {
+    if (isShuffling) {
+      const nextRandomEpisodieList = Math.floor(
+        Math.random() * episodeList.length
+      );
+      setCurrentEpisodeIndex(nextRandomEpisodieList);
+    } else if (hasNext) {
+      setCurrentEpisodeIndex(currentEpisodeIndex + 1);
+    }
+  }
+  function playPrevious() {
+    if (hasPrevious) {
+      setCurrentEpisodeIndex(currentEpisodeIndex - 1);
+    }
   }
 
   return (
@@ -48,7 +97,17 @@ export function PayerProvider({ children }: PlayerProviderProps) {
         play,
         isPlaying,
         togglePlay,
+        playList,
         setPlayingState,
+        playNext,
+        playPrevious,
+        hasNext,
+        hasPrevious,
+        toggleLop,
+        isLooping,
+        toggleShuffling,
+        clearPlayState,
+        isShuffling,
       }}
     >
       {children}

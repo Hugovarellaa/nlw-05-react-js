@@ -8,13 +8,15 @@ import { parseISO } from "date-fns";
 import styles from "./episode.module.scss";
 import Image from "next/image";
 import Link from "next/link";
+import { usePlayer } from "../../context/usePlayer";
+import Head from "next/head";
 
 type Episodes = {
   id: string;
   title: string;
   thumbnail: string;
   members: string;
-  duration: string;
+  duration: number;
   durationAsString: number;
   url: string;
   publishedAt: string;
@@ -26,8 +28,13 @@ interface EpisodesProps {
 }
 
 export default function Episode({ episodes }: EpisodesProps) {
+  const { play } = usePlayer();
   return (
     <div className={styles.episode}>
+      <Head>
+        <title>{episodes.title} | Podcast</title>
+      </Head>
+
       <div className={styles.thumbnailContainer}>
         <Link href={"/"} passHref>
           <button type="button">
@@ -40,7 +47,7 @@ export default function Episode({ episodes }: EpisodesProps) {
           height={160}
           objectFit="cover"
         />
-        <button type="button">
+        <button type="button" onClick={() => play(episodes)}>
           <img src="/play.svg" alt="Tocar episódio" />
         </button>
       </div>
